@@ -14,7 +14,7 @@ All notable changes to this project are documented here. The format follows
 - `init` writes `key_classes` for JSON projects.
 - README: recommend `--output-dir` over `>` on Windows PowerShell 5.1.
 
-## 0.1.0
+## 0.2.0
 
 Initial release.
 

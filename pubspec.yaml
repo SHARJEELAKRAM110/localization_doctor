@@ -3,7 +3,7 @@ description: >-
   Audit Flutter and Dart localization files (ARB and JSON) for missing,
   unused, duplicate and inconsistent translations, with terminal, JSON and
   HTML reports and CI-friendly exit codes.
-version: 0.1.0
+version: 0.2.0
 repository: https://github.com/SHARJEELAKRAM110/localization_doctor
 issue_tracker: https://github.com/SHARJEELAKRAM110/localization_doctor/issues
 topics:
