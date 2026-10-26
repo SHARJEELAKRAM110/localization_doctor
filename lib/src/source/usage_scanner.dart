@@ -44,6 +44,13 @@ class UsageScanResult {
   final diagnostics = <Diagnostic>[];
   final scannedFiles = <String>[];
   final skippedGeneratedFiles = <String>[];
+
+  /// String constants of key classes such as easy_localization's generated
+  /// `LocaleKeys`: class name -> constant name -> key.
+  final keyConstants = <String, Map<String, String>>{};
+
+  /// Files that declare a key class.
+  final keyClassFiles = <String>[];
 }
 
 /// Options for [scanSourceUsage].
@@ -54,6 +61,7 @@ class UsageScanOptions {
     required this.localizationClasses,
     required this.accessors,
     required this.jsonLookupFunctions,
+    this.keyClasses = const [],
     this.reportMissingDirectories = true,
   });
 
@@ -64,6 +72,10 @@ class UsageScanOptions {
   final List<String> localizationClasses;
   final List<String> accessors;
   final List<String> jsonLookupFunctions;
+
+  /// Classes whose `static const` string fields are translation keys, such
+  /// as easy_localization's generated `LocaleKeys`.
+  final List<String> keyClasses;
   final bool reportMissingDirectories;
 }
 
@@ -88,6 +100,9 @@ UsageScanResult scanSourceUsage(String root, UsageScanOptions options) {
         );
 
   final files = <String>{};
+  // Excluded files are not scanned for usage, but may declare key classes
+  // (easy_localization writes `LocaleKeys` to a `*.g.dart` file).
+  final excludedFiles = <String>{};
   for (final dir in options.sourceDirectories) {
     final absolute = p.normalize(p.join(root, dir));
     if (!p.isWithin(root, absolute) && !p.equals(root, absolute)) continue;
@@ -121,7 +136,10 @@ UsageScanResult scanSourceUsage(String root, UsageScanOptions options) {
         )) {
           continue;
         }
-        if (globs.any((g) => g.matches(rel))) continue;
+        if (globs.any((g) => g.matches(rel))) {
+          excludedFiles.add(rel);
+          continue;
+        }
         files.add(rel);
       }
     } on FileSystemException catch (e) {
@@ -137,11 +155,46 @@ UsageScanResult scanSourceUsage(String root, UsageScanOptions options) {
     }
   }
 
+  final keyClasses = options.keyClasses.toSet();
+  final keyClassPattern = keyClasses.isEmpty
+      ? null
+      : RegExp(
+          r'\bclass\s+(?:'
+          '${keyClasses.map(RegExp.escape).join('|')}'
+          r')\b',
+        );
+  final contents = <String, String>{};
+  if (keyClassPattern != null) {
+    for (final rel in [...files, ...excludedFiles]..sort()) {
+      final String content;
+      try {
+        content = File(p.join(root, rel)).readAsStringSync();
+      } on Exception {
+        continue; // Reported below for scanned files.
+      }
+      if (files.contains(rel)) contents[rel] = content;
+      if (!keyClassPattern.hasMatch(content)) continue;
+      final unit = parseString(
+        content: content,
+        path: p.join(root, rel),
+        throwIfDiagnostics: false,
+      ).unit;
+      unit.accept(_KeyClassVisitor(keyClasses, result.keyConstants));
+      result.keyClassFiles.add(rel);
+    }
+  }
+
   final sorted = files.toList()..sort();
   for (final rel in sorted) {
+    // A key class declares every key as a string literal; scanning it would
+    // make every key look possibly used.
+    if (result.keyClassFiles.contains(rel)) {
+      result.skippedGeneratedFiles.add(rel);
+      continue;
+    }
     final String content;
     try {
-      content = File(p.join(root, rel)).readAsStringSync();
+      content = contents[rel] ?? File(p.join(root, rel)).readAsStringSync();
     } on FileSystemException catch (e) {
       result.diagnostics.add(
         Diagnostic(
@@ -186,6 +239,7 @@ UsageScanResult scanSourceUsage(String root, UsageScanOptions options) {
         classes: classes,
         accessors: options.accessors.toSet(),
         lookups: options.jsonLookupFunctions.toSet(),
+        keyConstants: result.keyConstants,
         tracked: tracked,
         result: result,
       ),
@@ -300,6 +354,7 @@ class _UsageVisitor extends RecursiveAstVisitor<void> {
     required this.classes,
     required this.accessors,
     required this.lookups,
+    required this.keyConstants,
     required this.tracked,
     required this.result,
   });
@@ -309,8 +364,28 @@ class _UsageVisitor extends RecursiveAstVisitor<void> {
   final Set<String> classes;
   final Set<String> accessors;
   final Set<String> lookups;
+  final Map<String, Map<String, String>> keyConstants;
   final Set<String> tracked;
   final UsageScanResult result;
+
+  /// Resolves `LocaleKeys.name` (optionally import-prefixed) to its key.
+  String? _keyConstant(Expression expression) {
+    final e = _unwrap(expression);
+    if (e is PrefixedIdentifier) {
+      return keyConstants[e.prefix.name]?[e.identifier.name];
+    }
+    if (e is PropertyAccess) {
+      final target = e.target;
+      if (target is PrefixedIdentifier) {
+        return keyConstants[target.identifier.name]?[e.propertyName.name];
+      }
+    }
+    return null;
+  }
+
+  void _recordKey(String key, AstNode node) {
+    result.literalLookups.putIfAbsent(key, () => []).add(_location(node));
+  }
 
   SourceLocation _location(AstNode node) {
     final l = lineInfo.getLocation(node.offset);
@@ -326,6 +401,8 @@ class _UsageVisitor extends RecursiveAstVisitor<void> {
 
   void _lookup(Expression keyExpression, AstNode node) {
     final e = _unwrap(keyExpression);
+    // Key constants are recorded where they are referenced.
+    if (_keyConstant(e) != null) return;
     if (e is StringLiteral) {
       final value = e.stringValue;
       if (value != null) {
@@ -368,7 +445,10 @@ class _UsageVisitor extends RecursiveAstVisitor<void> {
   void visitPropertyAccess(PropertyAccess node) {
     final target = node.target;
     final name = node.propertyName.name;
-    if (target != null && _isL10n(target)) {
+    final constant = _keyConstant(node);
+    if (constant != null) {
+      _recordKey(constant, node);
+    } else if (target != null && _isL10n(target)) {
       _member(name, node.propertyName);
     } else if (lookups.contains(name) && target != null) {
       // GetX style: 'key'.tr
@@ -380,7 +460,12 @@ class _UsageVisitor extends RecursiveAstVisitor<void> {
   @override
   void visitPrefixedIdentifier(PrefixedIdentifier node) {
     final name = node.identifier.name;
-    if (_isL10n(node.prefix)) {
+    final constant = _keyConstant(node);
+    if (constant != null) {
+      // Any reference counts: the constant may be passed around before
+      // being translated.
+      _recordKey(constant, node);
+    } else if (_isL10n(node.prefix)) {
       _member(name, node.identifier);
     } else if (lookups.contains(name) &&
         !classes.contains(node.prefix.name) &&
@@ -472,5 +557,36 @@ class _UsageVisitor extends RecursiveAstVisitor<void> {
     }
     if (parts.isEmpty || parts.any((x) => x == null)) return null;
     return normalizeLocale(parts.whereType<String>().join('_'));
+  }
+}
+
+/// Collects `static const` string fields of the given key classes.
+class _KeyClassVisitor extends RecursiveAstVisitor<void> {
+  _KeyClassVisitor(this.classes, this.constants);
+
+  final Set<String> classes;
+  final Map<String, Map<String, String>> constants;
+
+  @override
+  void visitClassDeclaration(ClassDeclaration node) {
+    final name = node.namePart.typeName.lexeme;
+    if (classes.contains(name)) {
+      final fields = constants.putIfAbsent(name, () => {});
+      for (final member in node.body.childEntities) {
+        if (member is! FieldDeclaration ||
+            !member.isStatic ||
+            !member.fields.isConst) {
+          continue;
+        }
+        for (final variable in member.fields.variables) {
+          final initializer = variable.initializer;
+          if (initializer is StringLiteral) {
+            final value = initializer.stringValue;
+            if (value != null) fields[variable.name.lexeme] = value;
+          }
+        }
+      }
+    }
+    super.visitClassDeclaration(node);
   }
 }

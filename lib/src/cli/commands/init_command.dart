@@ -141,7 +141,11 @@ source:
   # Extra expressions that return the localizations object, for example an
   # extension getter such as `context.l10n`.
   accessors: []
-
+${hasJson ? '''  # Classes whose static const strings are keys (easy_localization's
+  # generated LocaleKeys), so `LocaleKeys.home_title.tr()` counts as usage.
+  key_classes:
+    - LocaleKeys
+''' : ''}
 checks:
   missing_keys: true
   extra_keys: true

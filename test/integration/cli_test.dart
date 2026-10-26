@@ -232,6 +232,8 @@ void main() {
       expect(config.directories, ['lib/l10n', 'assets/translations']);
       expect(config.requiredLocales, ['en', 'fr', 'ur']);
       expect(config.localizationClasses, ['S']);
+      expect(content, contains('key_classes:'));
+      expect(config.keyClasses, ['LocaleKeys']);
       final audit = await runCliCaptured(['--path', project.root]);
       expect(audit.exitCode, isNot(ExitCodes.usage));
     });

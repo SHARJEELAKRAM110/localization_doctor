@@ -35,7 +35,7 @@ modifies your project.
 | Placeholder consistency for ARB, including `@key.placeholders` metadata | `LOC004` `LOC014` | Supported |
 | Placeholder consistency for JSON with a configurable pattern | `LOC004` | Supported |
 | Unused keys via generated localizations (`AppLocalizations.of(context)!.key`, variables, fields, parameters, custom accessors) | `LOC002` | Supported (static analysis) |
-| Unused keys via JSON lookups (`'key'.tr()`, `tr('key')`, `'key'.tr`) | `LOC002` `LOC015` `LOC016` | Supported (static analysis) |
+| Unused keys via JSON lookups (`'key'.tr()`, `tr('key')`, `'key'.tr`, easy_localization `LocaleKeys.key`) | `LOC002` `LOC015` `LOC016` | Supported (static analysis) |
 | Flutter configuration: `generate: true`, dependencies, `l10n.yaml`, generated output, literal `supportedLocales`, JSON asset declarations | `LOC007` | Supported where reliably detectable |
 | Locale coverage table | — | Supported |
 | Terminal, JSON and HTML reports | — | Supported |
@@ -203,6 +203,7 @@ source:
   localization_classes: [AppLocalizations]   # default: l10n.yaml output-class
   accessors: [context.l10n]     # expressions that return the localizations object
   json_lookup_functions: [tr, plural, translate]
+  key_classes: [LocaleKeys]     # classes whose static const strings are keys
 
 checks:                          # all default to true
   missing_keys: true             # LOC001, LOC013
@@ -316,6 +317,15 @@ Every diagnostic has a **confidence** value:
 - A key is used when a string literal is passed to a lookup function
   (`'key'.tr()`, `tr('key')`, `context.tr('key')`, `plural('key', n)`,
   `'key'.tr`).
+- A reference to a key constant also counts as use, wherever it appears.
+  Key constants are the `static const` strings of a class listed in
+  `source.key_classes`. The default is easy_localization's generated
+  `LocaleKeys`, so `tr(LocaleKeys.home_title)`, `LocaleKeys.home_title.tr()`
+  and `final k = LocaleKeys.home_title;` all mark `home.title` as used. The
+  key class is read even from excluded files such as `locale_keys.g.dart`,
+  but is never scanned for usage itself. A constant whose key is missing
+  from the base JSON is reported as `LOC016`, which usually means
+  `locale_keys.g.dart` is out of date.
 - Keys that match the literal prefix of an interpolated lookup
   (`'errors.$code'.tr()`), or that appear as any other string literal, are
   `inconclusive`.
@@ -425,10 +435,14 @@ Schema notes:
 ## HTML report
 
 ```bash
-localization_doctor --format html > l10n-report.html
-# or, together with terminal output:
-localization_doctor --format terminal,html --output-dir build/l10n
+localization_doctor --format html --output-dir build/l10n
+# writes build/l10n/localization_doctor_report.html
 ```
+
+On macOS, Linux and PowerShell 7 you can also redirect stdout:
+`localization_doctor --format html > report.html`. **Windows PowerShell 5.1**
+saves redirected output as UTF-16 and garbles non-ASCII text, so use
+`--output-dir` there.
 
 The page is a single file with inline CSS and JavaScript. It loads no
 external fonts, scripts or images, so it works offline. It shows:
@@ -535,6 +549,13 @@ run `localization_doctor init` and edit the generated file.
 reaches the localizations object through an extension such as
 `context.l10n`. Add it under `source.accessors`. If you renamed the class,
 check `output-class` in `l10n.yaml` or `source.localization_classes`.
+
+**easy_localization: every key is "probable" and there are many `LOC015`
+dynamic lookups**: your code uses a generated key class with a name other
+than `LocaleKeys`. Add it to `source.key_classes`.
+
+**Reports saved with `>` on Windows are huge or garbled**: Windows
+PowerShell 5.1 writes redirected output as UTF-16. Use `--output-dir`.
 
 **Keys used through string building are reported as unused**: add them, or a
 pattern such as `errors.*`, to `ignore.unused_keys`.

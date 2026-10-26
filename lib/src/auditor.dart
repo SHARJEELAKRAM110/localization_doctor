@@ -87,6 +87,7 @@ class LocalizationAuditor {
           localizationClasses: context.localizationClasses,
           accessors: config.accessors,
           jsonLookupFunctions: config.jsonLookupFunctions,
+          keyClasses: config.keyClasses,
           reportMissingDirectories: config.explicitSourceDirectories,
         ),
       );

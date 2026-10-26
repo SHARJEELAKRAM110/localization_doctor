@@ -9,6 +9,10 @@ const defaultJsonPlaceholderPattern = r'\{([A-Za-z_][A-Za-z0-9_]*)\}';
 /// GetX (`'key'.tr`).
 const defaultJsonLookupFunctions = ['tr', 'plural', 'translate'];
 
+/// Default classes whose `static const` strings are translation keys:
+/// easy_localization's generated `LocaleKeys`.
+const defaultKeyClasses = ['LocaleKeys'];
+
 /// Directories excluded from source scanning in addition to user excludes.
 const defaultSourceExcludes = [
   '**/*.g.dart',
@@ -165,6 +169,7 @@ class DoctorConfig {
     this.localizationClasses,
     this.accessors = const [],
     this.jsonLookupFunctions = defaultJsonLookupFunctions,
+    this.keyClasses = defaultKeyClasses,
     this.checks = const ChecksConfig(),
     this.ignore = const IgnoreConfig(),
     this.severityOverrides = const {},
@@ -210,6 +215,9 @@ class DoctorConfig {
   /// `context.l10n`.
   final List<String> accessors;
   final List<String> jsonLookupFunctions;
+
+  /// Classes whose `static const` string fields are translation keys.
+  final List<String> keyClasses;
   final ChecksConfig checks;
   final IgnoreConfig ignore;
   final Map<DiagnosticCode, Severity> severityOverrides;
@@ -245,6 +253,7 @@ class DoctorConfig {
     localizationClasses: localizationClasses,
     accessors: accessors,
     jsonLookupFunctions: jsonLookupFunctions,
+    keyClasses: keyClasses,
     checks: checks,
     ignore: ignore,
     severityOverrides: severityOverrides,

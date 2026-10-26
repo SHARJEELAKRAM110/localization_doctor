@@ -20,6 +20,19 @@ void main() {
     expect(config.failOn, Severity.error);
     expect(config.sourceDirectories, ['lib']);
     expect(config.reportFormats, ['terminal']);
+    expect(config.keyClasses, ['LocaleKeys']);
+  });
+
+  test('source.key_classes is configurable and validated', () {
+    expect(parseConfig('source:\n  key_classes: [Keys, Tr]').keyClasses, [
+      'Keys',
+      'Tr',
+    ]);
+    expect(parseConfig('source:\n  key_classes: []').keyClasses, isEmpty);
+    expect(
+      () => parseConfig('source:\n  key_classes: [not-valid]'),
+      configError('not a Dart identifier'),
+    );
   });
 
   test('parses the full documented schema', () {

@@ -334,6 +334,7 @@ class _ConfigReader {
       'localization_classes',
       'accessors',
       'json_lookup_functions',
+      'key_classes',
     ]);
     final srcDirs = _stringList(src, 'directories', 'source.directories');
     final identifier = RegExp(r'^[A-Za-z_$][A-Za-z0-9_$]*$');
@@ -360,6 +361,15 @@ class _ConfigReader {
         _fail(
           '"$f" in "source.json_lookup_functions" is not a Dart identifier.',
           _node(src, 'json_lookup_functions')!,
+        );
+      }
+    }
+    final keyClasses = _stringList(src, 'key_classes', 'source.key_classes');
+    for (final c in keyClasses ?? const <String>[]) {
+      if (!identifier.hasMatch(c)) {
+        _fail(
+          '"$c" in "source.key_classes" is not a Dart identifier.',
+          _node(src, 'key_classes')!,
         );
       }
     }
@@ -566,6 +576,7 @@ class _ConfigReader {
           a.replaceAll(RegExp(r'\s+'), ''),
       ],
       jsonLookupFunctions: lookups ?? defaultJsonLookupFunctions,
+      keyClasses: keyClasses ?? defaultKeyClasses,
       checks: checks,
       ignore: ignore,
       severityOverrides: overrides,

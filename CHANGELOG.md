@@ -4,6 +4,16 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses
 [Semantic Versioning](https://semver.org/).
 
+## Unreleased
+
+- Unused-key analysis understands easy_localization's generated `LocaleKeys`
+  constants (`tr(LocaleKeys.home_title)`, `LocaleKeys.home_title.tr()`).
+  Classes are configurable with `source.key_classes` (default
+  `[LocaleKeys]`). References to constants whose key is missing from the base
+  JSON are reported as `LOC016`.
+- `init` writes `key_classes` for JSON projects.
+- README: recommend `--output-dir` over `>` on Windows PowerShell 5.1.
+
 ## 0.1.0
 
 Initial release.

@@ -439,6 +439,38 @@ void f(String code) {
       );
     });
 
+    test('easy_localization LocaleKeys constants count as usage', () {
+      final project = TestProject.create({
+        'pubspec.yaml': 'name: x\n',
+        'assets/translations/en.json':
+            '{"home": {"title": "Home"}, "Add": "Add", "never": "Never"}',
+        'assets/translations/fr.json':
+            '{"home": {"title": "Accueil"}, "Add": "Ajouter", "never": "Jamais"}',
+        'lib/translations/locale_keys.g.dart': '''
+abstract class LocaleKeys {
+  static const home_title = 'home.title';
+  static const Add = 'Add';
+  static const never = 'never';
+  static const removed = 'removed';
+}
+''',
+        'lib/main.dart': '''
+void f() {
+  tr(LocaleKeys.home_title);
+  LocaleKeys.Add.tr();
+  LocaleKeys.removed.tr();
+}
+''',
+      });
+      final result = project.audit();
+      final unused = withCode(result, DiagnosticCode.unusedKey).single;
+      expect((unused.key, unused.confidence), ('never', Confidence.definite));
+      expect(withCode(result, DiagnosticCode.dynamicKeyUsage), isEmpty);
+      final undefined = withCode(result, DiagnosticCode.undefinedKey).single;
+      expect(undefined.key, 'removed');
+      expect(undefined.location!.path, 'lib/main.dart');
+    });
+
     test('a lookup with an unknown key downgrades unused JSON keys', () {
       final project = TestProject.create({
         'assets/translations/en.json': '{"a": "A"}',

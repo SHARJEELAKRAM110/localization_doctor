@@ -10,6 +10,7 @@ UsageScanResult scan(
   List<String> accessors = const [],
   List<String> lookups = const ['tr', 'plural', 'translate'],
   List<String> dirs = const ['lib'],
+  List<String> keyClasses = const ['LocaleKeys'],
 }) {
   final project = TestProject.create(files);
   return scanSourceUsage(
@@ -20,6 +21,7 @@ UsageScanResult scan(
       localizationClasses: classes,
       accessors: accessors,
       jsonLookupFunctions: lookups,
+      keyClasses: keyClasses,
     ),
   );
 }
@@ -176,6 +178,100 @@ void f(String code, String key) {
       final result = scan({'lib/a.dart': "const keys = ['menu.open'];"});
       expect(result.stringLiterals, contains('menu.open'));
       expect(result.literalLookups, isEmpty);
+    });
+  });
+
+  group('key classes (easy_localization LocaleKeys)', () {
+    const localeKeys = '''
+// DO NOT EDIT. This is code generated via package:easy_localization/generate.dart
+abstract class  LocaleKeys {
+  static const a = 'a';
+  static const home_title = 'home.title';
+  static const String typed = 'typed.key';
+  static const c = 'c';
+  static const d = 'd';
+  static const e = 'e';
+  static const unusedConst = 'unused';
+  static final notConst = 'ignored';
+  static const notString = 1;
+}
+''';
+
+    test('constants resolve to their keys in every usage form', () {
+      final result = scan({
+        'lib/translations/locale_keys.g.dart': localeKeys,
+        'lib/main.dart': '''
+import 'translations/locale_keys.g.dart' as gen;
+void f(context) {
+  tr(LocaleKeys.a);
+  LocaleKeys.home_title.tr();
+  context.tr(LocaleKeys.typed);
+  gen.LocaleKeys.c.tr();
+  final k = LocaleKeys.d;
+  plural(LocaleKeys.e, 2);
+}
+''',
+      });
+      expect(result.keyClassFiles, ['lib/translations/locale_keys.g.dart']);
+      expect(result.keyConstants['LocaleKeys'], {
+        'a': 'a',
+        'home_title': 'home.title',
+        'typed': 'typed.key',
+        'c': 'c',
+        'd': 'd',
+        'e': 'e',
+        'unusedConst': 'unused',
+      });
+      expect(result.literalLookups.keys.toSet(), {
+        'a',
+        'home.title',
+        'typed.key',
+        'c',
+        'd',
+        'e',
+      });
+      expect(result.literalLookups['home.title']!.single.line, 4);
+      expect(result.dynamicLookups, isEmpty);
+    });
+
+    test('a key class outside generated files is not scanned for usage', () {
+      final result = scan({
+        'lib/keys.dart': "class LocaleKeys { static const a = 'a'; }",
+        'lib/main.dart': 'f() => LocaleKeys.a.tr();',
+      });
+      expect(result.keyClassFiles, ['lib/keys.dart']);
+      expect(result.skippedGeneratedFiles, ['lib/keys.dart']);
+      expect(result.scannedFiles, ['lib/main.dart']);
+      expect(result.stringLiterals, isNot(contains('a')));
+    });
+
+    test('custom key class names are supported', () {
+      final result = scan(
+        {
+          'lib/k.g.dart': "class Keys { static const x = 'x.y'; }",
+          'lib/main.dart': 'f() => tr(Keys.x);',
+        },
+        keyClasses: ['Keys'],
+      );
+      expect(result.literalLookups.keys, ['x.y']);
+    });
+
+    test('without key class support, constant keys are dynamic lookups', () {
+      final result = scan({
+        'lib/translations/locale_keys.g.dart': localeKeys,
+        'lib/main.dart': 'f() => tr(LocaleKeys.a);',
+      }, keyClasses: []);
+      expect(result.literalLookups, isEmpty);
+      expect(result.dynamicLookups, hasLength(1));
+    });
+
+    test('unknown constants are left to the compiler', () {
+      final result = scan({
+        'lib/translations/locale_keys.g.dart': localeKeys,
+        'lib/main.dart': 'f() => tr(LocaleKeys.missing);',
+      });
+      expect(result.literalLookups, isEmpty);
+      expect(result.dynamicLookups, hasLength(1));
     });
   });
 
