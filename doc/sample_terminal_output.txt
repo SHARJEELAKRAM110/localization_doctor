@@ -1,4 +1,4 @@
-Localization Doctor 0.1.0
+Localization Doctor 0.2.1
 Project: /path/to/localization_doctor/example/sample_app
 
 Translation bundles

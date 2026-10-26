@@ -44,21 +44,49 @@ modifies your project.
 
 ## Installation
 
-Global activation keeps the tool's dependencies separate from your app's
-dependencies:
+### Recommended: global activation
+
+Global activation keeps the tool's dependencies separate from your app's.
+It works with every supported Flutter version:
 
 ```bash
 dart pub global activate localization_doctor
 ```
 
-You can also add it as a development dependency:
+Then run `localization_doctor` from your project root. If the command is not
+found, add the pub cache `bin` directory to your `PATH`:
+
+- macOS and Linux: `$HOME/.pub-cache/bin`
+- Windows: `%LOCALAPPDATA%\Pub\Cache\bin`
+
+You can also run it as `dart pub global run localization_doctor`.
+
+### As a development dependency (newer Flutter only)
 
 ```bash
 dart pub add --dev localization_doctor
 ```
 
-Requires Dart 3.11 or later (Flutter 3.41 or later). The Flutter SDK is not
-needed to run audits.
+Then run it with `dart run localization_doctor`.
+
+This only works when your Flutter SDK allows `meta` 1.18.3 or later, which
+`package:analyzer` 14 requires. Flutter pins `meta` to an exact version, and
+older releases pin `meta` 1.17.0 (Flutter 3.41.x does), so `flutter pub get`
+fails with:
+
+```text
+Because every version of flutter from sdk depends on meta 1.17.0 and every
+version of localization_doctor depends on analyzer ^14.5.0, flutter from sdk
+is incompatible with localization_doctor.
+```
+
+Flutter 3.47.8 (Dart 3.13) is known to work. On older Flutter versions, use
+global activation instead. Never put the tool under `dependencies`: it is a
+development tool and should not ship with your app.
+
+### Requirements
+
+Requires Dart 3.11 or later. The Flutter SDK is not needed to run audits.
 
 ## Quick start
 
@@ -341,7 +369,7 @@ are parsed with `package:analyzer` and are never executed.
 Real output from `localization_doctor --path example/sample_app`:
 
 ```text
-Localization Doctor 0.1.0
+Localization Doctor 0.2.1
 Project: /path/to/localization_doctor/example/sample_app
 
 Translation bundles
@@ -385,7 +413,7 @@ FAILED: 2 violations at or above "error" severity
 ```json
 {
   "schemaVersion": 1,
-  "tool": { "name": "localization_doctor", "version": "0.1.0" },
+  "tool": { "name": "localization_doctor", "version": "0.2.1" },
   "projectPath": "/path/to/localization_doctor/example/sample_app",
   "generatedAt": "2026-10-26T07:17:01.018398Z",
   "status": "failed",
@@ -479,7 +507,7 @@ jobs:
         with:
           sdk: 3.11.4
       - name: Install localization_doctor
-        run: dart pub global activate localization_doctor 0.1.0
+        run: dart pub global activate localization_doctor 0.2.1
       - name: Audit translations
         run: >
           dart pub global run localization_doctor audit --strict
@@ -539,6 +567,8 @@ reporters. Everything under `lib/src` is internal.
   (`en_US.json`, but `fil_PH.json` needs a prefix or a mapping).
 - Symbolic links are never followed.
 - Requires Dart 3.11 or later because it depends on `package:analyzer` 14.x.
+  As a development dependency it also needs a Flutter SDK that allows
+  `meta` 1.18.3 or later; see [Installation](#installation).
 
 ## Troubleshooting
 
@@ -564,8 +594,20 @@ pattern such as `errors.*`, to `ignore.unused_keys`.
 name. Add an entry to `localization.locale_mappings` or, for ARB files, add
 `@@locale`.
 
-**Dependency conflicts after `dart pub add --dev`**: your app pins a
-different `analyzer` version. Use `dart pub global activate` instead.
+**`flutter pub get` fails with "flutter from sdk is incompatible with
+localization_doctor"**: your Flutter SDK pins `meta` to a version older than
+`package:analyzer` 14 accepts (Flutter 3.41.x pins `meta` 1.17.0). To fix it:
+
+1. Remove `localization_doctor` from `pubspec.yaml` and run
+   `flutter pub get`.
+2. Run `dart pub global activate localization_doctor` instead.
+
+Upgrading Flutter (3.47.8 is known to work) also resolves it, but global
+activation avoids touching your app's dependencies at all.
+
+**Other dependency conflicts after `dart pub add --dev`**: another package in
+your app needs a different `analyzer` version, which is common with
+`build_runner` code generators. Use `dart pub global activate` instead.
 
 **Colors in CI logs**: colors are disabled automatically when stdout is not a
 terminal. Set `NO_COLOR=1` or pass `--no-color` to be explicit.
