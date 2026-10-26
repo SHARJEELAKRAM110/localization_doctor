@@ -1,0 +1,15 @@
+name: broken_project
+description: Intentionally broken translations for localization_doctor demos.
+publish_to: none
+
+environment:
+  sdk: ^3.11.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  easy_localization: any
+
+flutter:
+  assets:
+    - assets/translations/

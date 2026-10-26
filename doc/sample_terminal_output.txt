@@ -1,0 +1,34 @@
+Localization Doctor 0.1.0
+Project: /path/to/localization_doctor/example/sample_app
+
+Translation bundles
+  lib/l10n/app_*.arb  base: en  locales: en, fr, ur
+
+Locale coverage
+  Bundle              Locale     Total  Translated  Missing  Empty  Invalid  Coverage
+  lib/l10n/app_*.arb  en (base)      7           7        0      0        0      100%
+  lib/l10n/app_*.arb  fr             7           6        0      1        0     85.7%
+  lib/l10n/app_*.arb  ur             7           6        1      0        0     85.7%
+
+Diagnostics
+  error   LOC001  lib/l10n/app_ur.arb
+    Key "settingsTitle" exists in en but is missing from ur.
+    fix: Add "settingsTitle" to app_ur.arb.
+  error   LOC004  lib/l10n/app_fr.arb:5:3
+    "greeting" in fr uses {nom}, which is not defined by the base locale en.
+    fix: Use only the placeholders of the base message: {name}.
+  warning LOC002  lib/l10n/app_en.arb:28:3
+    Key "legacyBanner" appears to be unused: its getter is never referenced in the scanned sources.
+    fix: Remove "legacyBanner" from every locale, or add it to "ignore.unused_keys" if it is used dynamically.
+  warning LOC004  lib/l10n/app_fr.arb:5:3
+    "greeting" in fr does not use {name} from the base locale en.
+    fix: Include {name} in the translation, unless omitting it is intentional.
+  warning LOC005  lib/l10n/app_fr.arb:8:3
+    Translation "logout" is empty in fr.
+    fix: Provide a translation for "logout".
+  info    LOC007  l10n.yaml  [probable]
+    Generated localizations file "lib/l10n/app_localizations.dart" was not found. It is created by `flutter gen-l10n` (or automatically by `flutter pub get`).
+    fix: Run `flutter gen-l10n` if the generated code is expected to be checked in.
+
+Summary: 2 errors, 3 warnings, 1 info
+FAILED: 2 violations at or above "error" severity

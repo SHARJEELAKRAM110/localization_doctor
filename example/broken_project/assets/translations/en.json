@@ -1,0 +1,15 @@
+{
+  "home": {
+    "title": "Home",
+    "subtitle": "Welcome back, {name}"
+  },
+  "errors": {
+    "network": "Network error",
+    "timeout": "Request timed out"
+  },
+  "cart": {
+    "checkout": "Checkout",
+    "checkout": "Proceed to checkout"
+  },
+  "unusedPromo": "Spring sale!"
+}

@@ -1,0 +1,9 @@
+{
+  "@@locale": "ur",
+  "appTitle": "لوکلائزیشن ڈاکٹر ڈیمو",
+  "homeTitle": "ہوم",
+  "greeting": "سلام، {name}!",
+  "itemCount": "{count, plural, =0{کوئی آئٹم نہیں} =1{ایک آئٹم} other{{count} آئٹمز}}",
+  "logout": "لاگ آؤٹ",
+  "legacyBanner": "ہمارا پرانا ڈیزائن آزمائیں"
+}

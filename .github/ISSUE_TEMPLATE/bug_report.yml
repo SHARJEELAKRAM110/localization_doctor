@@ -1,0 +1,30 @@
+name: Bug report
+description: A check reports something wrong, misses a problem, or crashes.
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: Include the command you ran and the output (terminal or JSON).
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Minimal reproduction
+      description: The smallest translation files, Dart snippet and localization_doctor.yaml that show the problem.
+      render: text
+  - type: input
+    id: version
+    attributes:
+      label: Versions
+      description: Output of `localization_doctor --version` and `dart --version`, plus your OS.
+    validations:
+      required: true

@@ -1,0 +1,200 @@
+{
+  "schemaVersion": 1,
+  "tool": {
+    "name": "localization_doctor",
+    "version": "0.1.0"
+  },
+  "projectPath": "/path/to/localization_doctor/example/sample_app",
+  "generatedAt": "2026-10-26T07:24:51.494241Z",
+  "status": "failed",
+  "failOn": "error",
+  "summary": {
+    "errors": 2,
+    "warnings": 3,
+    "infos": 1,
+    "violations": 2,
+    "suppressed": 0,
+    "scannedSourceFiles": 1
+  },
+  "bundles": [
+    {
+      "id": "lib/l10n/app_*.arb",
+      "format": "arb",
+      "baseLocale": "en",
+      "locales": [
+        "en",
+        "fr",
+        "ur"
+      ],
+      "files": [
+        "lib/l10n/app_en.arb",
+        "lib/l10n/app_fr.arb",
+        "lib/l10n/app_ur.arb"
+      ]
+    }
+  ],
+  "coverage": [
+    {
+      "bundle": "lib/l10n/app_*.arb",
+      "locale": "en",
+      "isBase": true,
+      "isOptional": false,
+      "total": 7,
+      "translated": 7,
+      "missing": 0,
+      "empty": 0,
+      "invalid": 0,
+      "fileValid": true,
+      "coverage": 100.0
+    },
+    {
+      "bundle": "lib/l10n/app_*.arb",
+      "locale": "fr",
+      "isBase": false,
+      "isOptional": false,
+      "total": 7,
+      "translated": 6,
+      "missing": 0,
+      "empty": 1,
+      "invalid": 0,
+      "fileValid": true,
+      "coverage": 85.7
+    },
+    {
+      "bundle": "lib/l10n/app_*.arb",
+      "locale": "ur",
+      "isBase": false,
+      "isOptional": false,
+      "total": 7,
+      "translated": 6,
+      "missing": 1,
+      "empty": 0,
+      "invalid": 0,
+      "fileValid": true,
+      "coverage": 85.7
+    }
+  ],
+  "diagnostics": [
+    {
+      "code": "LOC001",
+      "title": "Missing translation key",
+      "severity": "error",
+      "confidence": "definite",
+      "message": "Key \"settingsTitle\" exists in en but is missing from ur.",
+      "bundle": "lib/l10n/app_*.arb",
+      "locale": "ur",
+      "key": "settingsTitle",
+      "location": {
+        "path": "lib/l10n/app_ur.arb",
+        "line": null,
+        "column": null
+      },
+      "relatedLocations": [
+        {
+          "path": "lib/l10n/app_en.arb",
+          "line": 26,
+          "column": 3
+        }
+      ],
+      "suggestion": "Add \"settingsTitle\" to app_ur.arb."
+    },
+    {
+      "code": "LOC004",
+      "title": "Placeholder mismatch",
+      "severity": "error",
+      "confidence": "definite",
+      "message": "\"greeting\" in fr uses {nom}, which is not defined by the base locale en.",
+      "bundle": "lib/l10n/app_*.arb",
+      "locale": "fr",
+      "key": "greeting",
+      "location": {
+        "path": "lib/l10n/app_fr.arb",
+        "line": 5,
+        "column": 3
+      },
+      "relatedLocations": [
+        {
+          "path": "lib/l10n/app_en.arb",
+          "line": 8,
+          "column": 3
+        }
+      ],
+      "suggestion": "Use only the placeholders of the base message: {name}."
+    },
+    {
+      "code": "LOC002",
+      "title": "Unused translation key",
+      "severity": "warning",
+      "confidence": "definite",
+      "message": "Key \"legacyBanner\" appears to be unused: its getter is never referenced in the scanned sources.",
+      "bundle": "lib/l10n/app_*.arb",
+      "locale": "en",
+      "key": "legacyBanner",
+      "location": {
+        "path": "lib/l10n/app_en.arb",
+        "line": 28,
+        "column": 3
+      },
+      "relatedLocations": [],
+      "suggestion": "Remove \"legacyBanner\" from every locale, or add it to \"ignore.unused_keys\" if it is used dynamically."
+    },
+    {
+      "code": "LOC004",
+      "title": "Placeholder mismatch",
+      "severity": "warning",
+      "confidence": "definite",
+      "message": "\"greeting\" in fr does not use {name} from the base locale en.",
+      "bundle": "lib/l10n/app_*.arb",
+      "locale": "fr",
+      "key": "greeting",
+      "location": {
+        "path": "lib/l10n/app_fr.arb",
+        "line": 5,
+        "column": 3
+      },
+      "relatedLocations": [
+        {
+          "path": "lib/l10n/app_en.arb",
+          "line": 8,
+          "column": 3
+        }
+      ],
+      "suggestion": "Include {name} in the translation, unless omitting it is intentional."
+    },
+    {
+      "code": "LOC005",
+      "title": "Empty translation value",
+      "severity": "warning",
+      "confidence": "definite",
+      "message": "Translation \"logout\" is empty in fr.",
+      "bundle": "lib/l10n/app_*.arb",
+      "locale": "fr",
+      "key": "logout",
+      "location": {
+        "path": "lib/l10n/app_fr.arb",
+        "line": 8,
+        "column": 3
+      },
+      "relatedLocations": [],
+      "suggestion": "Provide a translation for \"logout\"."
+    },
+    {
+      "code": "LOC007",
+      "title": "Localization configuration issue",
+      "severity": "info",
+      "confidence": "probable",
+      "message": "Generated localizations file \"lib/l10n/app_localizations.dart\" was not found. It is created by `flutter gen-l10n` (or automatically by `flutter pub get`).",
+      "bundle": "lib/l10n/app_*.arb",
+      "locale": null,
+      "key": null,
+      "location": {
+        "path": "l10n.yaml",
+        "line": null,
+        "column": null
+      },
+      "relatedLocations": [],
+      "suggestion": "Run `flutter gen-l10n` if the generated code is expected to be checked in."
+    }
+  ],
+  "skippedFiles": []
+}

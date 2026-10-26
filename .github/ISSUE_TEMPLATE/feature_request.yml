@@ -1,0 +1,16 @@
+name: Feature request
+description: Suggest a new check, format or report option.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What localization mistake should be caught, and how does it affect your app?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: Example input files and the diagnostic you would expect.

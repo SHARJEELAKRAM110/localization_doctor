@@ -1,0 +1,9 @@
+{
+  "home": {
+    "title": "ہوم",
+    "subtitle": "خوش آمدید، {name}"
+  }
+  "errors": {
+    "network": "نیٹ ورک کی خرابی"
+  }
+}

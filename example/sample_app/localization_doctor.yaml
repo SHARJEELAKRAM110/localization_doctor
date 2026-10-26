@@ -1,0 +1,13 @@
+base_locale: en
+
+localization:
+  directories:
+    - lib/l10n
+  required_locales:
+    - en
+    - ur
+    - fr
+
+source:
+  directories:
+    - lib

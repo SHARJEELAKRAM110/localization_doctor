@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    name: ${{ matrix.os }} / Dart ${{ matrix.sdk }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        sdk: [3.11.4, stable]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: ${{ matrix.sdk }}
+      - run: dart pub get
+      - name: Format
+        run: dart format --output=none --set-exit-if-changed .
+      - name: Analyze
+        run: dart analyze --fatal-infos
+      - name: Test
+        run: dart test
+      - name: Smoke test the CLI
+        shell: bash
+        run: |
+          dart run localization_doctor --help
+          set +e
+          dart run localization_doctor --path example/sample_app
+          code=$?
+          set -e
+          if [ "$code" != "1" ]; then echo "expected exit code 1, got $code"; exit 1; fi
+      - name: Validate package
+        if: matrix.os == 'ubuntu-latest' && matrix.sdk == 'stable'
+        run: dart pub publish --dry-run

@@ -1,0 +1,11 @@
+{
+  "home": {
+    "title": "Accueil",
+    "subtitle": "Bon retour, {username}"
+  },
+  "errors": "Erreur",
+  "cart": {
+    "checkout": "Commander"
+  },
+  "unusedPromo": "Soldes de printemps !"
+}

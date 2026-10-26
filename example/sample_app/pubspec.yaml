@@ -1,0 +1,16 @@
+name: sample_app
+description: Sample app audited by localization_doctor. Not meant to be built.
+publish_to: none
+
+environment:
+  sdk: ^3.11.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  intl: any
+
+flutter:
+  generate: true

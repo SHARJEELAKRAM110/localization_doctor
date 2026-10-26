@@ -1,0 +1,6 @@
+{
+  "@@locale": "en",
+  "title": "Broken demo",
+  "title": "Broken demo (duplicate)",
+  "count": "{count, plural, =1{one} other{{count} many}"
+}

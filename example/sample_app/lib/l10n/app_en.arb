@@ -1,0 +1,29 @@
+{
+  "@@locale": "en",
+  "appTitle": "Localization Doctor Demo",
+  "@appTitle": {
+    "description": "Title shown in the app bar"
+  },
+  "homeTitle": "Home",
+  "greeting": "Hello, {name}!",
+  "@greeting": {
+    "description": "Greets the signed-in user",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Ayesha"
+      }
+    }
+  },
+  "itemCount": "{count, plural, =0{No items} =1{One item} other{{count} items}}",
+  "@itemCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsTitle": "Settings",
+  "logout": "Log out",
+  "legacyBanner": "Try our old design"
+}

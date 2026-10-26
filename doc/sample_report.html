@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Localization Doctor report</title>
+<style>:root{--bg:#f7f7f8;--fg:#1d1d22;--muted:#5b5b66;--card:#fff;--border:#dcdce2;
+--error:#b3261e;--warning:#8a5a00;--info:#0b57a4;--ok:#1e6b32;--bar:#2f6fde}
+@media (prefers-color-scheme:dark){:root{--bg:#121216;--fg:#ececf1;--muted:#a9a9b6;
+--card:#1c1c22;--border:#33333d;--error:#ff8a80;--warning:#ffc266;--info:#8ab8ff;
+--ok:#7fd99a;--bar:#6f9cff}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);
+font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:1100px;margin:0 auto;padding:24px 16px 48px}
+h1{font-size:1.6rem;margin:0 0 4px}h2{font-size:1.2rem;margin:32px 0 12px}
+.meta{color:var(--muted);margin:0 0 12px;overflow-wrap:anywhere}
+code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.9em;
+overflow-wrap:anywhere}
+.status{display:inline-block;padding:6px 14px;border-radius:999px;font-weight:600;
+margin:0;border:1px solid currentColor}
+.status.pass{color:var(--ok)}.status.fail{color:var(--error)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;
+margin-top:20px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:10px;
+padding:12px 16px;display:flex;flex-direction:column}
+.card .value{font-size:1.6rem;font-weight:700}.card .label{color:var(--muted)}
+.card.error .value{color:var(--error)}.card.warning .value{color:var(--warning)}
+.card.info .value{color:var(--info)}
+.scroll{overflow-x:auto;border:1px solid var(--border);border-radius:10px;
+background:var(--card)}
+table{border-collapse:collapse;width:100%}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--border);
+vertical-align:top}
+th{font-size:.85rem;color:var(--muted);font-weight:600}
+tr:last-child td{border-bottom:0}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+.bar{display:inline-block;width:90px;height:8px;border-radius:4px;
+background:var(--border);vertical-align:middle;margin-right:8px;overflow:hidden}
+.bar span{display:block;height:100%;background:var(--bar)}
+.pct{font-variant-numeric:tabular-nums}
+.tag{font-size:.75rem;border:1px solid var(--border);border-radius:4px;padding:0 4px;
+color:var(--muted)}
+.sev{font-weight:600;text-transform:uppercase;font-size:.8rem}
+.sev.error{color:var(--error)}.sev.warning{color:var(--warning)}.sev.info{color:var(--info)}
+#diagnostics td:nth-child(3){min-width:220px}
+.fix{color:var(--muted);margin-top:4px}.related{color:var(--muted);font-size:.85rem}
+.filters{display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin-bottom:12px}
+.filters label{display:flex;flex-direction:column;font-size:.85rem;color:var(--muted)}
+input,select{font:inherit;color:var(--fg);background:var(--card);
+border:1px solid var(--border);border-radius:6px;padding:6px 8px;min-width:180px}
+input:focus,select:focus{outline:2px solid var(--bar);outline-offset:1px}
+#count{color:var(--muted);font-size:.85rem}
+.empty{color:var(--ok)}
+</style>
+</head>
+<body>
+<main>
+<header>
+<h1>Localization Doctor report</h1>
+<p class="meta">Project <code>/path/to/localization_doctor/example/sample_app</code> · version 0.1.0 · generated 2026-10-26T07:24:42.089166Z</p>
+<p class="status fail" role="status">Failed — 2 violation(s) at or above “error”</p>
+</header>
+<section class="cards" aria-label="Summary">
+<div class="card error"><span class="value">2</span><span class="label">Errors</span></div>
+<div class="card warning"><span class="value">3</span><span class="label">Warnings</span></div>
+<div class="card info"><span class="value">1</span><span class="label">Info</span></div>
+<div class="card muted"><span class="value">0</span><span class="label">Suppressed</span></div>
+</section>
+<section><h2>Locale coverage</h2>
+<div class="scroll"><table>
+<thead><tr><th scope="col">Bundle</th><th scope="col">Locale</th><th scope="col" class="num">Total</th><th scope="col" class="num">Translated</th><th scope="col" class="num">Missing</th><th scope="col" class="num">Empty</th><th scope="col" class="num">Invalid</th><th scope="col">Coverage</th></tr></thead><tbody>
+<tr><td><code>lib/l10n/app_*.arb</code></td><td>en <span class="tag">base</span></td><td class="num">7</td><td class="num">7</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td><div class="bar" role="img" aria-label="100.0% translated"><span style="width:100.0%"></span></div><span class="pct">100.0%</span></td></tr>
+<tr><td><code>lib/l10n/app_*.arb</code></td><td>fr</td><td class="num">7</td><td class="num">6</td><td class="num">0</td><td class="num">1</td><td class="num">0</td><td><div class="bar" role="img" aria-label="85.7% translated"><span style="width:85.7%"></span></div><span class="pct">85.7%</span></td></tr>
+<tr><td><code>lib/l10n/app_*.arb</code></td><td>ur</td><td class="num">7</td><td class="num">6</td><td class="num">1</td><td class="num">0</td><td class="num">0</td><td><div class="bar" role="img" aria-label="85.7% translated"><span style="width:85.7%"></span></div><span class="pct">85.7%</span></td></tr>
+</tbody></table></div>
+</section>
+<section><h2>Diagnostics</h2>
+<form class="filters" onsubmit="return false">
+<label>Search <input id="q" type="search" placeholder="key, file, message…"></label>
+<label>Severity <select id="sev"><option value="">All</option><option value="error">Errors</option><option value="warning">Warnings</option><option value="info">Info</option></select></label>
+<label>Check <select id="code"><option value="">All</option><option value="LOC001">LOC001 — Missing translation key</option><option value="LOC002">LOC002 — Unused translation key</option><option value="LOC004">LOC004 — Placeholder mismatch</option><option value="LOC005">LOC005 — Empty translation value</option><option value="LOC007">LOC007 — Localization configuration issue</option></select></label>
+<span id="count" aria-live="polite"></span>
+</form>
+<div class="scroll"><table id="diagnostics">
+<thead><tr><th scope="col">Severity</th><th scope="col">Code</th><th scope="col">Location</th><th scope="col">Details</th></tr></thead><tbody>
+<tr data-severity="error" data-code="LOC001" data-search="loc001 key &quot;settingstitle&quot; exists in en but is missing from ur. settingstitle ur lib/l10n/app_ur.arb lib/l10n/app_*.arb"><td><span class="sev error">error</span></td><td><abbr title="Missing translation key">LOC001</abbr></td><td><code>lib/l10n/app_ur.arb</code><br><small>locale ur</small></td><td>Key &quot;settingsTitle&quot; exists in en but is missing from ur.<div class="fix">Fix: Add &quot;settingsTitle&quot; to app_ur.arb.</div><div class="related">See also: <code>lib/l10n/app_en.arb:26:3</code></div></td></tr>
+<tr data-severity="error" data-code="LOC004" data-search="loc004 &quot;greeting&quot; in fr uses {nom}, which is not defined by the base locale en. greeting fr lib/l10n/app_fr.arb:5:3 lib/l10n/app_*.arb"><td><span class="sev error">error</span></td><td><abbr title="Placeholder mismatch">LOC004</abbr></td><td><code>lib/l10n/app_fr.arb:5:3</code><br><small>locale fr</small></td><td>&quot;greeting&quot; in fr uses {nom}, which is not defined by the base locale en.<div class="fix">Fix: Use only the placeholders of the base message: {name}.</div><div class="related">See also: <code>lib/l10n/app_en.arb:8:3</code></div></td></tr>
+<tr data-severity="warning" data-code="LOC002" data-search="loc002 key &quot;legacybanner&quot; appears to be unused: its getter is never referenced in the scanned sources. legacybanner en lib/l10n/app_en.arb:28:3 lib/l10n/app_*.arb"><td><span class="sev warning">warning</span></td><td><abbr title="Unused translation key">LOC002</abbr></td><td><code>lib/l10n/app_en.arb:28:3</code><br><small>locale en</small></td><td>Key &quot;legacyBanner&quot; appears to be unused: its getter is never referenced in the scanned sources.<div class="fix">Fix: Remove &quot;legacyBanner&quot; from every locale, or add it to &quot;ignore.unused_keys&quot; if it is used dynamically.</div></td></tr>
+<tr data-severity="warning" data-code="LOC004" data-search="loc004 &quot;greeting&quot; in fr does not use {name} from the base locale en. greeting fr lib/l10n/app_fr.arb:5:3 lib/l10n/app_*.arb"><td><span class="sev warning">warning</span></td><td><abbr title="Placeholder mismatch">LOC004</abbr></td><td><code>lib/l10n/app_fr.arb:5:3</code><br><small>locale fr</small></td><td>&quot;greeting&quot; in fr does not use {name} from the base locale en.<div class="fix">Fix: Include {name} in the translation, unless omitting it is intentional.</div><div class="related">See also: <code>lib/l10n/app_en.arb:8:3</code></div></td></tr>
+<tr data-severity="warning" data-code="LOC005" data-search="loc005 translation &quot;logout&quot; is empty in fr. logout fr lib/l10n/app_fr.arb:8:3 lib/l10n/app_*.arb"><td><span class="sev warning">warning</span></td><td><abbr title="Empty translation value">LOC005</abbr></td><td><code>lib/l10n/app_fr.arb:8:3</code><br><small>locale fr</small></td><td>Translation &quot;logout&quot; is empty in fr.<div class="fix">Fix: Provide a translation for &quot;logout&quot;.</div></td></tr>
+<tr data-severity="info" data-code="LOC007" data-search="loc007 generated localizations file &quot;lib/l10n/app_localizations.dart&quot; was not found. it is created by &#96;flutter gen-l10n&#96; (or automatically by &#96;flutter pub get&#96;).   l10n.yaml lib/l10n/app_*.arb"><td><span class="sev info">info</span><br><small>probable</small></td><td><abbr title="Localization configuration issue">LOC007</abbr></td><td><code>l10n.yaml</code></td><td>Generated localizations file &quot;lib/l10n/app_localizations.dart&quot; was not found. It is created by &#96;flutter gen-l10n&#96; (or automatically by &#96;flutter pub get&#96;).<div class="fix">Fix: Run &#96;flutter gen-l10n&#96; if the generated code is expected to be checked in.</div></td></tr>
+</tbody></table></div>
+</section>
+</main>
+<script>(function(){
+var q=document.getElementById('q'),sev=document.getElementById('sev'),
+code=document.getElementById('code'),count=document.getElementById('count');
+var rows=Array.prototype.slice.call(document.querySelectorAll('#diagnostics tbody tr'));
+function apply(){var text=q.value.trim().toLowerCase(),s=sev.value,c=code.value,shown=0;
+rows.forEach(function(r){var ok=(!s||r.dataset.severity===s)&&(!c||r.dataset.code===c)&&
+(!text||r.dataset.search.indexOf(text)!==-1);r.hidden=!ok;if(ok)shown++;});
+count.textContent=shown+' of '+rows.length+' shown';}
+[q,sev,code].forEach(function(el){el.addEventListener('input',apply);});apply();})();
+</script>
+</body>
+</html>
